@@ -1,0 +1,20 @@
+{
+    "name": "flowpack/neos-dimensionresolver",
+    "type": "neos-package",
+    "license": "GPL-3.0+",
+    "description": "A support package for Neos CMS that allows for arbitrary content dimension resolution.",
+    "require": {
+        "neos/neos": "~3.3.0",
+        "neos/flow": "~4.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Flowpack\\Neos\\DimensionResolver\\": "Classes"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Flowpack\\Neos\\DimensionResolver\\Tests\\": "Tests"
+        }
+    }
+}
