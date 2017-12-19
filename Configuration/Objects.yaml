@@ -1,0 +1,2 @@
+Neos\Neos\Routing\FrontendNodeRoutePartHandlerInterface:
+  className: Flowpack\Neos\DimensionResolver\Routing\FrontendNodeRoutePartHandler

@@ -1,0 +1,14 @@
+Flowpack:
+  Neos:
+    DimensionResolver:
+      contentDimensions:
+        resolution:
+          uriPathSegmentDelimiter: '_'
+Neos:
+  Flow:
+    http:
+      chain:
+        preprocess:
+          chain:
+            detectContentSubgraph:
+              component: Neos\Neos\Http\DetectContentSubgraphComponent
