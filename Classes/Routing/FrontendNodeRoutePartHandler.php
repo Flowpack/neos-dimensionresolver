@@ -27,7 +27,7 @@ use Neos\Neos\Domain\Service\ContentDimensionPresetSourceInterface;
 use Neos\Neos\Domain\Service\SiteService;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\ContentRepository\Domain\Utility\NodePaths;
-use Neos\Neos\Http\ContentSubgraphUriProcessor;
+use Flowpack\Neos\DimensionResolver\Http\ContentSubgraphUriProcessor;
 use Neos\Neos\Routing\FrontendNodeRoutePartHandlerInterface;
 
 /**
