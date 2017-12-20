@@ -11,4 +11,4 @@ Neos:
         preprocess:
           chain:
             detectContentSubgraph:
-              component: Neos\Neos\Http\DetectContentSubgraphComponent
+              component: Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphComponent
