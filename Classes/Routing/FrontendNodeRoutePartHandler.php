@@ -354,16 +354,22 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
     {
         if ($this->wasUriPathSegmentUsedDuringSubgraphDetection()) {
             $pivot = mb_strpos($path, '/');
+            if (NodePaths::isContextPath($path)) {
+                $pivot--;
+            }
             $path = $pivot === false ? '' : mb_substr($path, $pivot + 1);
         }
-        if ($path === '' || NodePaths::isContextPath($path) === false) {
+
+        if ($path === '' || !NodePaths::isContextPath($path)) {
             return $path;
         }
+
         try {
             if (strpos($path, '@') === 0) {
                 $path = '/' . $path;
             }
             $nodePathAndContext = NodePaths::explodeContextPath($path);
+
             // This is a workaround as we potentially prepend the context path with "/" in buildContextFromRequestPath to create a valid context path,
             // the code in this class expects an empty nodePath though for the site node, so we remove it again at this point.
             return $nodePathAndContext['nodePath'] === '/' ? '' : $nodePathAndContext['nodePath'];

@@ -65,7 +65,6 @@ final class DetectContentSubgraphComponent implements Http\Component\ComponentIn
         $dimensionValues = $this->detectDimensionSpacePoint($componentContext, $uriPathSegmentUsed);
         $workspaceName = $this->detectContentStream($componentContext);
 
-
         $existingParameters = $componentContext->getParameter(RoutingComponent::class, 'parameters') ?? RouteParameters::createEmpty();
         $parameters = $existingParameters
             ->withParameter('dimensionValues', json_encode($dimensionValues))
