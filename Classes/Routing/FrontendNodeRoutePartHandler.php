@@ -27,8 +27,9 @@ use Neos\Neos\Domain\Service\ContentDimensionPresetSourceInterface;
 use Neos\Neos\Domain\Service\SiteService;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\ContentRepository\Domain\Utility\NodePaths;
-use Neos\Neos\Http\ContentSubgraphUriProcessor;
+use Flowpack\Neos\DimensionResolver\Http\ContentSubgraphUriProcessor;
 use Neos\Neos\Routing\FrontendNodeRoutePartHandlerInterface;
+use Neos\Neos\Routing\Exception;
 
 /**
  * A route part handler for finding nodes specifically in the website's frontend.
@@ -166,11 +167,11 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param string $requestPath The request path, for example /the/node/path@some-workspace
      * @return NodeInterface
-     * @throws \Neos\Neos\Routing\Exception\NoWorkspaceException
-     * @throws \Neos\Neos\Routing\Exception\NoSiteException
-     * @throws \Neos\Neos\Routing\Exception\NoSuchNodeException
-     * @throws \Neos\Neos\Routing\Exception\NoSiteNodeException
-     * @throws \Neos\Neos\Routing\Exception\InvalidRequestPathException
+     * @throws Exception\NoSiteException
+     * @throws Exception\NoSiteNodeException
+     * @throws Exception\NoSuchNodeException
+     * @throws Exception\NoWorkspaceException
+     * @throws \Neos\ContentRepository\Exception\NodeException
      */
     protected function convertRequestPathToNode($requestPath)
     {
@@ -221,8 +222,9 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param mixed $node Either a Node object or an absolute context node path
      * @return ResolveResult|false ResolveResult if value could be resolved successfully, otherwise false.
-     * @throws Exception\InvalidRequestPathException
-     * @throws \Neos\Neos\Http\Exception\InvalidDimensionPresetLinkProcessorException
+     * @throws Exception\MissingNodePropertyException
+     * @throws \Flowpack\Neos\DimensionResolver\Http\Exception\InvalidDimensionPresetLinkProcessorException
+     * @throws \Neos\ContentRepository\Exception\NodeException
      */
     protected function resolveValue($node)
     {
@@ -267,7 +269,6 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      * @param string $path a path containing the context, such as /sites/examplecom/home@user-johndoe or /assets/pictures/my-picture or /assets/pictures/my-picture@user-john;language=de&country=global
      * @param boolean $convertLiveDimensions Whether to parse dimensions from the context path in a non-live workspace
      * @return ContentContext based on the specified path; only evaluating the context information (i.e. everything after "@")
-     * @throws Exception\InvalidRequestPathException
      */
     protected function buildContextFromPath($path, $convertLiveDimensions)
     {
@@ -391,6 +392,8 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param NodeInterface $node The node where the generated path should lead to
      * @return string The relative route path, possibly prefixed with a segment for identifying the current content dimension values
+     * @throws Exception\MissingNodePropertyException
+     * @throws \Neos\ContentRepository\Exception\NodeException
      */
     protected function resolveRoutePathForNode(NodeInterface $node)
     {
@@ -413,8 +416,8 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param NodeInterface $siteNode The site node, used as a starting point while traversing the tree
      * @param string $relativeRequestPath The request path, relative to the site's root path
-     * @throws \Neos\Neos\Routing\Exception\NoSuchNodeException
      * @return string
+     * @throws \Neos\ContentRepository\Exception\NodeException
      */
     protected function getRelativeNodePathByUriPathSegmentProperties(NodeInterface $siteNode, $relativeRequestPath)
     {
@@ -445,6 +448,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      * @param NodeInterface $node The node where the generated path should lead to
      * @return string A relative request path
      * @throws Exception\MissingNodePropertyException if the given node doesn't have a "uriPathSegment" property set
+     * @throws \Neos\ContentRepository\Exception\NodeException
      */
     protected function getRequestPathByNode(NodeInterface $node)
     {
