@@ -12,6 +12,7 @@ namespace Flowpack\Neos\DimensionResolver\Routing;
  * source code.
  */
 
+use Flowpack\Neos\DimensionResolver\Http;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Log\SystemLoggerInterface;
 use Neos\Flow\Mvc\Routing\Dto\MatchResult;
@@ -27,7 +28,6 @@ use Neos\Neos\Domain\Service\ContentDimensionPresetSourceInterface;
 use Neos\Neos\Domain\Service\SiteService;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\ContentRepository\Domain\Utility\NodePaths;
-use Flowpack\Neos\DimensionResolver\Http\ContentSubgraphUriProcessor;
 use Neos\Neos\Routing\FrontendNodeRoutePartHandlerInterface;
 use Neos\Neos\Routing\Exception;
 
@@ -68,7 +68,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
 
     /**
      * @Flow\Inject
-     * @var ContentSubgraphUriProcessor
+     * @var Http\ContentSubgraphUriProcessorInterface
      */
     protected $contentSubgraphUriProcessor;
 
