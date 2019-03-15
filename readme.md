@@ -11,7 +11,7 @@ features and extension points.
 
 The available dimensions and presets can be configured via settings:
 
-``` 
+```yaml
     Neos:
      ContentRepository:
        contentDimensions:
@@ -56,7 +56,7 @@ The dimension resolver comes with three basic `resolution modes` which can be co
 The default resolution mode is `uriPathSegment`. As by default in previous versions, it operates on an additional path segment,
 e.g. `https://domain.tld/{language}_{market}/home.html`. These are the configuration options available:
 
-```
+```yaml
 Neos:
   ContentRepository:
     contentDimensions:
@@ -90,7 +90,7 @@ The other way around, as long as no content dimensions resolved via uriPathSegme
 The default preset can have an empty `resolutionValue` value. The following example will lead to URLs that do not contain
 `en` if the `en_US` preset is active, but will show the `resolutionValue` for other languages that are defined as well:
 
-```
+```yaml
 Neos:
   ContentRepository:
     contentDimensions:
@@ -112,7 +112,7 @@ Neos:
 The only limitation is that all resolution values must be unique across all dimensions that are resolved via uriPathSegment.
 If you need non-unique resolution values, you can switch support for non-empty dimensions off:
 
-```
+```yaml
 Neos:
   Neos:
     routing:
@@ -124,7 +124,7 @@ Neos:
 Another resolution mode is `subdomain`. This mode extracts information from the first part of the host and adds it respectively
 when generating URIs.
 
-```
+```yaml
 Neos:
   ContentRepository:
     contentDimensions:
@@ -157,7 +157,7 @@ With the given configuration, URIs will be resolved like `{language}.domain.tld/
 The final resolution mode is `topLevelDomain`. This modes extracts information from the last part of the host and adds it respectively
 when generating URIs.
 
-```
+```yaml
 Neos:
   ContentRepository:
     contentDimensions:
@@ -188,7 +188,7 @@ With the given configuration, URIs will be resolved like `domain.{market}/home.h
 
 You can also change the behaviour based on the hostname. You can use it on every resolution mode additonaly. You just need to add the option `resolutionHost` to your presets. Here a example how it looks like if you use the `topLevelDomain` mode:
 
-```
+```yaml
 presets:
   'EU':
     label: 'European Union'
@@ -213,7 +213,7 @@ for post processing links matching the given dimension presets.
 
 These can be implemented and configured individually per dimension:
 
-```
+```yaml
 Neos:
   ContentRepository:
     contentDimensions:
@@ -243,7 +243,7 @@ To enable developers to deal with this in a nice way, there are predefined ways 
 
 Detection is done via an HTTP component that can be replaced via configuration:
 
-```
+```yaml
 Neos:
   Flow:
     http:
