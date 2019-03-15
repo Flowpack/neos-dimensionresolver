@@ -1,4 +1,5 @@
 <?php
+
 namespace Flowpack\Neos\DimensionResolver\Http\ContentDimensionDetection;
 
 /*
@@ -38,7 +39,15 @@ final class TopLevelDomainDimensionPresetDetector implements ContentDimensionPre
             $pivot = $hostLength - mb_strlen($preset['resolutionValue']);
 
             if (mb_substr($host, $pivot) === $preset['resolutionValue']) {
-                return $preset;
+
+                if (array_key_exists('resolutionHost', $preset)) {
+                    if ($host === $preset['resolutionHost']) {
+                        return $preset;
+                    }
+                } else {
+                    return $preset;
+                }
+
             }
         }
 
