@@ -138,7 +138,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
                 $node = $this->convertRequestPathToNode($requestPath);
             });
         } catch (Exception $exception) {
-            $this->systemLogger->log('FrontendNodeRoutePartHandler matchValue(): ' . $exception->getMessage(), LOG_DEBUG);
+            $this->systemLogger->debug('FrontendNodeRoutePartHandler matchValue(): ' . $exception->getMessage());
             if ($requestPath === '') {
                 throw new Exception\NoHomepageException('Homepage could not be loaded. Probably you haven\'t imported a site yet', 1346950755, $exception);
             }
