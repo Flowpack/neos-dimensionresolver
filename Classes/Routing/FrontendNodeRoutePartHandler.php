@@ -14,7 +14,7 @@ namespace Flowpack\Neos\DimensionResolver\Routing;
 
 use Flowpack\Neos\DimensionResolver\Http;
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Log\SystemLoggerInterface;
+use Neos\Flow\Log\PsrSystemLoggerInterface;
 use Neos\Flow\Mvc\Routing\Dto\MatchResult;
 use Neos\Flow\Mvc\Routing\Dto\ResolveResult;
 use Neos\Flow\Mvc\Routing\Dto\RouteTags;
@@ -38,7 +38,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
 {
     /**
      * @Flow\Inject
-     * @var SystemLoggerInterface
+     * @var PsrSystemLoggerInterface
      */
     protected $systemLogger;
 
@@ -138,7 +138,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
                 $node = $this->convertRequestPathToNode($requestPath);
             });
         } catch (Exception $exception) {
-            $this->systemLogger->log('FrontendNodeRoutePartHandler matchValue(): ' . $exception->getMessage(), LOG_DEBUG);
+            $this->systemLogger->debug('FrontendNodeRoutePartHandler matchValue(): ' . $exception->getMessage());
             if ($requestPath === '') {
                 throw new Exception\NoHomepageException('Homepage could not be loaded. Probably you haven\'t imported a site yet', 1346950755, $exception);
             }
