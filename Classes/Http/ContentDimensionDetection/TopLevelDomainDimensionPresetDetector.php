@@ -36,18 +36,16 @@ final class TopLevelDomainDimensionPresetDetector implements ContentDimensionPre
         $host = $componentContext->getHttpRequest()->getUri()->getHost();
         $hostLength = mb_strlen($host);
         foreach ($presets as $preset) {
-            $pivot = $hostLength - mb_strlen($preset['resolutionValue']);
-
-            if (mb_substr($host, $pivot) === $preset['resolutionValue']) {
-
-                if (array_key_exists('resolutionHost', $preset)) {
-                    if ($host === $preset['resolutionHost']) {
-                        return $preset;
-                    }
-                } else {
+            if (array_key_exists('resolutionHost', $preset)) {
+                if ($host === $preset['resolutionHost']) {
                     return $preset;
                 }
+            } else {
+                $pivot = $hostLength - mb_strlen($preset['resolutionValue']);
 
+                if (mb_substr($host, $pivot) === $preset['resolutionValue']) {
+                    return $preset;
+                }
             }
         }
 

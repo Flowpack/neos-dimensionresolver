@@ -112,7 +112,7 @@ final class DetectContentSubgraphComponent implements Http\Component\ComponentIn
 
             $resolutionMode = $presetConfiguration['resolution']['mode'] ?? ContentDimensionResolutionMode::RESOLUTION_MODE_URIPATHSEGMENT;
             if ($resolutionMode === ContentDimensionResolutionMode::RESOLUTION_MODE_URIPATHSEGMENT) {
-                $options['delimiter'] = $this->uriPathSegmentDelimiter;
+                if (!empty($this->uriPathSegmentDelimiter)) $options['delimiter'] = $this->uriPathSegmentDelimiter;
             }
             $preset = $detector->detectPreset($dimensionName, $presetConfiguration['presets'], $componentContext, $options);
             if ($preset && $resolutionMode === ContentDimensionResolutionMode::RESOLUTION_MODE_URIPATHSEGMENT) {
