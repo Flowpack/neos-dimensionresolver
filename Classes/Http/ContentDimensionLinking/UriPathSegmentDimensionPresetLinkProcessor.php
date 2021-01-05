@@ -45,10 +45,9 @@ final class UriPathSegmentDimensionPresetLinkProcessor implements ContentDimensi
         $options = $overrideOptions ? Arrays::arrayMergeRecursiveOverrule($this->defaultOptions, $overrideOptions) : $this->defaultOptions;
         $pathSegmentPart = $options['offset'] > 0 ? $options['delimiter'] : '';
         $pathSegmentPart .= ($preset['resolutionValue'] ?? $preset['uriSegment']);
-
         if (array_key_exists('resolutionHost', $preset))
-            return $uriConstraints->withPathPrefix($pathSegmentPart . '/', true)->withHost($preset['resolutionHost']);
+            return $uriConstraints->withPathPrefix($pathSegmentPart, true)->withHost($preset['resolutionHost']);
         else
-            return $uriConstraints->withPathPrefix($pathSegmentPart . '/', true);
+            return $uriConstraints->withPathPrefix($pathSegmentPart, true);
     }
 }

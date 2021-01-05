@@ -241,17 +241,16 @@ Those complex scenarios are better served using individual implementations than 
 
 To enable developers to deal with this in a nice way, there are predefined ways to deal with both detection and link processing.
 
-Detection is done via an HTTP component that can be replaced via configuration:
+Detection is done via an HTTP Middleware that can be replaced via configuration:
 
 ```yaml
 Neos:
   Flow:
     http:
-      chain:
-        preprocess:
-          chain:
-            detectContentSubgraph:
-              component: Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphComponent
+      middlewares:
+        'detectContentSubgraph':
+          position: 'before routing'
+          middleware: 'Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphComponent'
 ```
 
 Link processing is done by the `Flowpack\Neos\DimensionResolver\Http\ContentSubgraphUriProcessorInterface`. To introduce your custom behaviour,
