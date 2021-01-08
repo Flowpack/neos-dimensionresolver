@@ -1,2 +1,3 @@
-Documentation/*
-!Documentation/*.rst
+*.DS_Store
+
+.idea/

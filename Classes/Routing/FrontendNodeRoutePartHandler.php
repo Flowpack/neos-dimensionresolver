@@ -14,7 +14,7 @@ namespace Flowpack\Neos\DimensionResolver\Routing;
 
 use Flowpack\Neos\DimensionResolver\Http;
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Log\PsrSystemLoggerInterface;
+use Psr\Log\LoggerInterface;
 use Neos\Flow\Mvc\Routing\Dto\MatchResult;
 use Neos\Flow\Mvc\Routing\Dto\ResolveResult;
 use Neos\Flow\Mvc\Routing\Dto\RouteTags;
@@ -37,8 +37,8 @@ use Neos\Neos\Routing\Exception;
 class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendNodeRoutePartHandlerInterface
 {
     /**
-     * @Flow\Inject
-     * @var PsrSystemLoggerInterface
+     * @Flow\Inject(name="Neos.Flow:SystemLogger")
+     * @var LoggerInterface
      */
     protected $systemLogger;
 

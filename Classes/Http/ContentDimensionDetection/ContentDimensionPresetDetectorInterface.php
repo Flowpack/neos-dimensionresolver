@@ -11,7 +11,7 @@ namespace Flowpack\Neos\DimensionResolver\Http\ContentDimensionDetection;
  * source code.
  */
 
-use Neos\Flow\Http;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Interface to detect the current request's dimension preset
@@ -31,9 +31,9 @@ interface ContentDimensionPresetDetectorInterface
      *
      * @param string $dimensionName
      * @param array $presets
-     * @param Http\Component\ComponentContext $componentContext
+     * @param ServerRequestInterface $request
      * @param array $overrideOptions
      * @return array|null
      */
-    public function detectPreset(string $dimensionName, array $presets, Http\Component\ComponentContext $componentContext, array $overrideOptions = null);
+    public function detectPreset(string $dimensionName, array $presets, ServerRequestInterface $request, array $overrideOptions = null);
 }
