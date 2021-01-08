@@ -29,7 +29,7 @@ use Flowpack\Neos\DimensionResolver\Http\ContentDimensionDetection\DimensionPres
 /**
  * The HTTP component for detecting the requested dimension space point
  */
-final class DetectContentSubgraphComponent implements MiddlewareInterface
+final class DetectContentSubgraphMiddleware implements MiddlewareInterface
 {
     /**
      * @Flow\Inject

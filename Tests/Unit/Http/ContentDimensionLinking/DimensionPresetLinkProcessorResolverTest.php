@@ -17,7 +17,7 @@ use Flowpack\Neos\DimensionResolver\Tests\Unit\Http\ContentDimensionLinking\Fixt
 use Flowpack\Neos\DimensionResolver\Tests\Unit\Http\ContentDimensionLinking\Fixtures\ValidDummyDimensionPresetLinkProcessor;
 
 /**
- * Test case for the DetectContentSubgraphComponent
+ * Test case for the DetectContentSubgraphMiddleware
  */
 class DimensionPresetLinkProcessorResolverTest extends UnitTestCase
 {
