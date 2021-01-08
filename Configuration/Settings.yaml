@@ -11,4 +11,4 @@ Neos:
       middlewares:
         'detectContentSubgraph':
           position: 'before routing'
-          middleware: 'Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphComponent'
+          middleware: 'Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphMiddleware'

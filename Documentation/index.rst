@@ -252,7 +252,7 @@ Detection is done via an HTTP middleware that can be replaced via configuration:
            preprocess:
              chain:
                detectContentSubgraph:
-                 component: Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphComponent
+                 component: Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphMiddleware
 
 Link processing is done by the ``Flowpack\Neos\DimensionResolver\Http\ContentSubgraphUriProcessorInterface``. To introduce your custom behaviour,
 implement the interface and declare it in ``Objects.yaml`` as usual in Flow.
