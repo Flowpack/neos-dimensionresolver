@@ -4,11 +4,11 @@ Flowpack:
       contentDimensions:
         resolution:
           uriPathSegmentDelimiter: '_'
+
 Neos:
   Flow:
     http:
-      chain:
-        preprocess:
-          chain:
-            detectContentSubgraph:
-              component: Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphComponent
+      middlewares:
+        'detectContentSubgraph':
+          position: 'before routing'
+          middleware: 'Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphComponent'

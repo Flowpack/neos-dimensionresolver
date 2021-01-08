@@ -11,7 +11,7 @@ namespace Flowpack\Neos\DimensionResolver\Http\ContentDimensionDetection;
  * source code.
  */
 
-use Neos\Flow\Http;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Top level domain based dimension preset detector
@@ -26,13 +26,13 @@ final class TopLevelDomainDimensionPresetDetector implements ContentDimensionPre
     /**
      * @param string $dimensionName
      * @param array $presets
-     * @param Http\Component\ComponentContext $componentContext
+     * @param ServerRequestInterface $request
      * @param array|null $overrideOptions
      * @return array|null
      */
-    public function detectPreset(string $dimensionName, array $presets, Http\Component\ComponentContext $componentContext, array $overrideOptions = null)
+    public function detectPreset(string $dimensionName, array $presets, ServerRequestInterface $request, array $overrideOptions = null)
     {
-        $host = $componentContext->getHttpRequest()->getUri()->getHost();
+        $host = $request->getUri()->getHost();
         $hostLength = mb_strlen($host);
         foreach ($presets as $preset) {
             $pivot = $hostLength - mb_strlen($preset['resolutionValue']);

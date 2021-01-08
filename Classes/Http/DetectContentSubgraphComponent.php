@@ -15,15 +15,21 @@ use Neos\ContentRepository\Domain\Service\ContentDimensionPresetSourceInterface;
 use Neos\ContentRepository\Domain\Service\ContextFactoryInterface;
 use Neos\ContentRepository\Domain\Utility\NodePaths;
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Http;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
 use Neos\Flow\Mvc\Routing\Dto\RouteParameters;
-use Neos\Flow\Mvc\Routing\RoutingComponent;
+use Neos\Flow\Http\ServerRequestAttributes;
+
 use Flowpack\Neos\DimensionResolver\Http\ContentDimensionDetection\DimensionPresetDetectorResolver;
 
 /**
  * The HTTP component for detecting the requested dimension space point
  */
-final class DetectContentSubgraphComponent implements Http\Component\ComponentInterface
+final class DetectContentSubgraphComponent implements MiddlewareInterface
 {
     /**
      * @Flow\Inject
@@ -56,33 +62,42 @@ final class DetectContentSubgraphComponent implements Http\Component\ComponentIn
     protected $uriPathSegmentDelimiter;
 
     /**
-     * @param Http\Component\ComponentContext $componentContext
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $next
      * @throws Exception\InvalidDimensionPresetDetectorException
+     * @return ResponseInterface
      */
-    public function handle(Http\Component\ComponentContext $componentContext)
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $next): ResponseInterface
     {
         $uriPathSegmentUsed = false;
-        $dimensionValues = $this->detectDimensionSpacePoint($componentContext, $uriPathSegmentUsed);
-        $workspaceName = $this->detectContentStream($componentContext);
+        $dimensionValues = $this->detectDimensionSpacePoint($request, $uriPathSegmentUsed);
+        $workspaceName = $this->detectContentStream($request);
 
-        $existingParameters = $componentContext->getParameter(RoutingComponent::class, 'parameters') ?? RouteParameters::createEmpty();
+        $existingParameters = $request->getAttribute(ServerRequestAttributes::ROUTING_PARAMETERS);
+        if ($existingParameters === null) {
+            $existingParameters = RouteParameters::createEmpty();
+        }
+
         $parameters = $existingParameters
             ->withParameter('dimensionValues', json_encode($dimensionValues))
             ->withParameter('workspaceName', $workspaceName)
             ->withParameter('uriPathSegmentUsed', $uriPathSegmentUsed);
-        $componentContext->setParameter(RoutingComponent::class, 'parameters', $parameters);
+
+        $request = $request->withAttribute(ServerRequestAttributes::ROUTING_PARAMETERS, $parameters);
+        return $next->handle($request);
     }
 
     /**
-     * @param Http\Component\ComponentContext $componentContext
+     * @param ServerRequestInterface $request
      * @param bool $uriPathSegmentUsed
      * @return array
      * @throws Exception\InvalidDimensionPresetDetectorException
      */
-    protected function detectDimensionSpacePoint(Http\Component\ComponentContext $componentContext, bool &$uriPathSegmentUsed): array
+    protected function detectDimensionSpacePoint(ServerRequestInterface $request, bool &$uriPathSegmentUsed): array
     {
         $coordinates = [];
-        $path = $componentContext->getHttpRequest()->getUri()->getPath();
+
+        $path = $request->getUri()->getPath();
 
         $isContextPath = NodePaths::isContextPath($path);
         $backendUriDimensionPresetDetector = new ContentDimensionDetection\BackendUriDimensionPresetDetector();
@@ -96,12 +111,12 @@ final class DetectContentSubgraphComponent implements Http\Component\ComponentIn
             $options['defaultPresetIdentifier'] = $presetConfiguration['defaultPreset'];
 
             if ($isContextPath) {
-                $preset = $backendUriDimensionPresetDetector->detectPreset($dimensionName, $presetConfiguration['presets'], $componentContext);
+                $preset = $backendUriDimensionPresetDetector->detectPreset($dimensionName, $presetConfiguration['presets'], $request);
                 if ($preset) {
                     $coordinates[$dimensionName] = $preset['values'];
                     if ($detector instanceof ContentDimensionDetection\UriPathSegmentDimensionPresetDetector) {
                         // we might have to remove the uri path segment anyway
-                        $uriPathSegmentPreset = $detector->detectPreset($dimensionName, $presetConfiguration['presets'], $componentContext, $options);
+                        $uriPathSegmentPreset = $detector->detectPreset($dimensionName, $presetConfiguration['presets'], $request, $options);
                         if ($uriPathSegmentPreset) {
                             $uriPathSegmentUsed = true;
                         }
@@ -114,7 +129,7 @@ final class DetectContentSubgraphComponent implements Http\Component\ComponentIn
             if ($resolutionMode === ContentDimensionResolutionMode::RESOLUTION_MODE_URIPATHSEGMENT) {
                 $options['delimiter'] = $this->uriPathSegmentDelimiter;
             }
-            $preset = $detector->detectPreset($dimensionName, $presetConfiguration['presets'], $componentContext, $options);
+            $preset = $detector->detectPreset($dimensionName, $presetConfiguration['presets'], $request, $options);
             if ($preset && $resolutionMode === ContentDimensionResolutionMode::RESOLUTION_MODE_URIPATHSEGMENT) {
                 $uriPathSegmentUsed = true;
                 $uriPathSegmentOffset++;
@@ -175,14 +190,14 @@ final class DetectContentSubgraphComponent implements Http\Component\ComponentIn
     }
 
     /**
-     * @param Http\Component\ComponentContext $componentContext
+     * @param ServerRequestInterface $request
      * @return string
      */
-    protected function detectContentStream(Http\Component\ComponentContext $componentContext): string
+    protected function detectContentStream(ServerRequestInterface $request): string
     {
         $contentStreamIdentifier = 'live';
 
-        $requestPath = $componentContext->getHttpRequest()->getUri()->getPath();
+        $requestPath = $request->getUri()->getPath();
         $requestPath = mb_substr($requestPath, mb_strrpos($requestPath, '/'));
         if ($requestPath !== '' && NodePaths::isContextPath($requestPath)) {
             try {

@@ -12,7 +12,7 @@ namespace Flowpack\Neos\DimensionResolver\Http\ContentDimensionDetection;
  */
 
 use Neos\ContentRepository\Domain\Utility\NodePaths;
-use Neos\Flow\Http;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Backend URI based dimension preset detector
@@ -27,13 +27,13 @@ final class BackendUriDimensionPresetDetector implements ContentDimensionPresetD
     /**
      * @param string $dimensionName
      * @param array $presets
-     * @param Http\Component\ComponentContext $componentContext
+     * @param ServerRequestInterface $request
      * @param array|null $overrideOptions
      * @return array|null
      */
-    public function detectPreset(string $dimensionName, array $presets, Http\Component\ComponentContext $componentContext, array $overrideOptions = null)
+    public function detectPreset(string $dimensionName, array $presets, ServerRequestInterface $request, array $overrideOptions = null)
     {
-        $path = $componentContext->getHttpRequest()->getUri()->getPath();
+        $path = $request->getUri()->getPath();
         $path = '/' . mb_substr($path, mb_strpos($path, '@'));
         if (mb_strpos($path, '.') !== false) {
             $path = mb_substr($path, 0, mb_strrpos($path, '.'));

@@ -241,7 +241,7 @@ Those complex scenarios are better served using individual implementations than 
 
 To enable developers to deal with this in a nice way, there are predefined ways to deal with both detection and link processing.
 
-Detection is done via an HTTP component that can be replaced via configuration:
+Detection is done via an HTTP middleware that can be replaced via configuration:
 
 .. code-block:: yaml
 
