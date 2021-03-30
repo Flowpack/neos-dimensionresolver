@@ -241,7 +241,7 @@ Those complex scenarios are better served using individual implementations than 
 
 To enable developers to deal with this in a nice way, there are predefined ways to deal with both detection and link processing.
 
-Detection is done via an HTTP component that can be replaced via configuration:
+Detection is done via an HTTP middleware that can be replaced via configuration:
 
 .. code-block:: yaml
 
@@ -252,7 +252,7 @@ Detection is done via an HTTP component that can be replaced via configuration:
            preprocess:
              chain:
                detectContentSubgraph:
-                 component: Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphComponent
+                 component: Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphMiddleware
 
 Link processing is done by the ``Flowpack\Neos\DimensionResolver\Http\ContentSubgraphUriProcessorInterface``. To introduce your custom behaviour,
 implement the interface and declare it in ``Objects.yaml`` as usual in Flow.

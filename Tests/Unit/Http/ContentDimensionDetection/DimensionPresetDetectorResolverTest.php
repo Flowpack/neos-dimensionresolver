@@ -17,7 +17,7 @@ use Flowpack\Neos\DimensionResolver\Tests\Unit\Http\ContentDimensionDetection\Fi
 use Flowpack\Neos\DimensionResolver\Tests\Unit\Http\ContentDimensionDetection\Fixtures\ValidDummyDimensionPresetDetector;
 
 /**
- * Test case for the DetectContentSubgraphComponent
+ * Test case for the DetectContentSubgraphMiddleware
  */
 class DimensionPresetDetectorResolverTest extends UnitTestCase
 {

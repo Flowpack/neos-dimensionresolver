@@ -11,8 +11,8 @@ namespace Flowpack\Neos\DimensionResolver\Http\ContentDimensionDetection;
  * source code.
  */
 
-use Neos\Flow\Http;
 use Neos\Utility\Arrays;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * URI path segment based dimension preset detector
@@ -30,14 +30,14 @@ final class UriPathSegmentDimensionPresetDetector implements ContentDimensionPre
     /**
      * @param string $dimensionName
      * @param array $presets
-     * @param Http\Component\ComponentContext $componentContext
+     * @param ServerRequestInterface $request
      * @param array|null $overrideOptions
      * @return array|null
      */
-    public function detectPreset(string $dimensionName, array $presets, Http\Component\ComponentContext $componentContext, array $overrideOptions = null)
+    public function detectPreset(string $dimensionName, array $presets, ServerRequestInterface $request, array $overrideOptions = null)
     {
         $options = $overrideOptions ? Arrays::arrayMergeRecursiveOverrule($this->defaultOptions, $overrideOptions) : $this->defaultOptions;
-        $requestPath = $componentContext->getHttpRequest()->getUri()->getPath();
+        $requestPath = $request->getUri()->getPath();
 
         if (!empty($requestPath) && $requestPath !== '/' && mb_strpos($requestPath, '/') !== false) {
             $pathSegments = explode('/', ($requestPath));

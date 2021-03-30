@@ -16,12 +16,12 @@ use Neos\Flow\Mvc\Routing\Dto\RouteParameters;
 use Neos\Flow\Mvc\Routing\RoutingComponent;
 use Neos\Flow\Tests\FunctionalTestCase;
 use Flowpack\Neos\DimensionResolver\Http\ContentDimensionResolutionMode;
-use Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphComponent;
+use Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphMiddleware;
 
 /**
  * Test case for the BackendUriDimensionPresetDetector
  */
-class DetectContentSubgraphComponentTest extends FunctionalTestCase
+class DetectContentSubgraphMiddlewareTest extends FunctionalTestCase
 {
     /**
      * @var array
@@ -110,9 +110,9 @@ class DetectContentSubgraphComponentTest extends FunctionalTestCase
 
         $dimensionPresetSource = $this->objectManager->get(ContentDimensionPresetSourceInterface::class);
         $dimensionPresetSource->setConfiguration($this->dimensionPresets);
-        $detectSubgraphComponent = new DetectContentSubgraphComponent();
+        $detectSubgraphMiddleware = new DetectContentSubgraphMiddleware();
 
-        $detectSubgraphComponent->handle($componentContext);
+        $detectSubgraphMiddleware->handle($componentContext);
         /** @var RouteParameters $routeParameters */
         $routeParameters = $componentContext->getParameter(RoutingComponent::class, 'parameters');
 
@@ -135,11 +135,11 @@ class DetectContentSubgraphComponentTest extends FunctionalTestCase
 
         $dimensionPresetSource = $this->objectManager->get(ContentDimensionPresetSourceInterface::class);
         $dimensionPresetSource->setConfiguration($this->dimensionPresets);
-        $detectSubgraphComponent = new DetectContentSubgraphComponent();
+        $detectSubgraphMiddleware = new DetectContentSubgraphMiddleware();
 
-        $this->inject($detectSubgraphComponent, 'uriPathSegmentDelimiter', '-');
+        $this->inject($detectSubgraphMiddleware, 'uriPathSegmentDelimiter', '-');
 
-        $detectSubgraphComponent->handle($componentContext);
+        $detectSubgraphMiddleware->handle($componentContext);
         /** @var RouteParameters $routeParameters */
         $routeParameters = $componentContext->getParameter(RoutingComponent::class, 'parameters');
 
@@ -162,9 +162,9 @@ class DetectContentSubgraphComponentTest extends FunctionalTestCase
 
         $dimensionPresetSource = $this->objectManager->get(ContentDimensionPresetSourceInterface::class);
         $dimensionPresetSource->setConfiguration($this->dimensionPresets);
-        $detectSubgraphComponent = new DetectContentSubgraphComponent();
+        $detectSubgraphMiddleware = new DetectContentSubgraphMiddleware();
 
-        $detectSubgraphComponent->handle($componentContext);
+        $detectSubgraphMiddleware->handle($componentContext);
         /** @var RouteParameters $routeParameters */
         $routeParameters = $componentContext->getParameter(RoutingComponent::class, 'parameters');
 
@@ -188,9 +188,9 @@ class DetectContentSubgraphComponentTest extends FunctionalTestCase
 
         $dimensionPresetSource = $this->objectManager->get(ContentDimensionPresetSourceInterface::class);
         $dimensionPresetSource->setConfiguration($this->dimensionPresets);
-        $detectSubgraphComponent = new DetectContentSubgraphComponent();
+        $detectSubgraphMiddleware = new DetectContentSubgraphMiddleware();
 
-        $detectSubgraphComponent->handle($componentContext);
+        $detectSubgraphMiddleware->handle($componentContext);
         /** @var RouteParameters $routeParameters */
         $routeParameters = $componentContext->getParameter(RoutingComponent::class, 'parameters');
 
