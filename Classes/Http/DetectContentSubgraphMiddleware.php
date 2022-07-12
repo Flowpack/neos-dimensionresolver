@@ -72,13 +72,17 @@ final class DetectContentSubgraphMiddleware implements MiddlewareInterface
         $uriPathSegmentUsed = false;
         $dimensionValues = $this->detectDimensionSpacePoint($request, $uriPathSegmentUsed);
         $workspaceName = $this->detectContentStream($request);
-        $existingParameters = $request->getAttribute(ServerRequestAttributes::ROUTING_PARAMETERS) ?? RouteParameters::createEmpty();
+        $existingParameters = $request->getAttribute(ServerRequestAttributes::ROUTING_PARAMETERS);
+        if ($existingParameters === null) {
+            $existingParameters = RouteParameters::createEmpty();
+        }
 
         $parameters = $existingParameters
             ->withParameter('dimensionValues', json_encode($dimensionValues))
             ->withParameter('workspaceName', $workspaceName)
             ->withParameter('uriPathSegmentUsed', $uriPathSegmentUsed)
             ->withParameter('requestUriHost', $request->getUri()->getHost());
+
 
         $request = $request->withAttribute(ServerRequestAttributes::ROUTING_PARAMETERS, $parameters);
         return $next->handle($request);
