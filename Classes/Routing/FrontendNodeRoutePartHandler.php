@@ -172,6 +172,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      * @throws Exception\NoSuchNodeException
      * @throws Exception\NoWorkspaceException
      * @throws \Neos\ContentRepository\Exception\NodeException
+     * @throws Exception\InvalidRequestPathException
      */
     protected function convertRequestPathToNode($requestPath)
     {
@@ -197,6 +198,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         if ($requestPathWithoutContext === '') {
             $node = $siteNode;
         } else {
+            $requestPathWithoutContext = $this->truncateUriPathSuffix((string)$requestPathWithoutContext);
             $relativeNodePath = $this->getRelativeNodePathByUriPathSegmentProperties($siteNode, $requestPathWithoutContext);
             $node = ($relativeNodePath !== false) ? $siteNode->getNode($relativeNodePath) : null;
         }
@@ -206,6 +208,26 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         }
 
         return $node;
+    }
+
+    /**
+     * Removes the configured suffix from the given $uriPath
+     * If the "uriPathSuffix" option is not set (or set to an empty string) the unaltered $uriPath is returned
+     *
+     * @param string $uriPath
+     * @return false|string|null
+     * @throws Exception\InvalidRequestPathException
+     */
+    protected function truncateUriPathSuffix(string $uriPath)
+    {
+        if (empty($this->options['uriPathSuffix'])) {
+            return $uriPath;
+        }
+        $suffixLength = strlen($this->options['uriPathSuffix']);
+        if (substr($uriPath, -$suffixLength) !== $this->options['uriPathSuffix']) {
+            throw new Exception\InvalidRequestPathException(sprintf('The request path "%s" doesn\'t contain the configured uriPathSuffix "%s"', $uriPath, $this->options['uriPathSuffix']), 1604912439);
+        }
+        return substr($uriPath, 0, -$suffixLength);
     }
 
     /**
