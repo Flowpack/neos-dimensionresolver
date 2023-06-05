@@ -282,7 +282,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         $routePath = $this->resolveRoutePathForNode($node);
         $uriConstraints = $this->contentSubgraphUriProcessor->resolveDimensionUriConstraints($node);
 
-        if (isset($this->options['uriPathSuffix'])) {
+        if (isset($this->options['uriPathSuffix']) && $node !== $siteNode) {
             $uriConstraints = $uriConstraints->withPathSuffix($this->options['uriPathSuffix']);
         }
 
