@@ -243,11 +243,9 @@ Detection is done via an HTTP middleware that can be replaced via configuration:
 Neos:
   Flow:
     http:
-      chain:
-        preprocess:
-          chain:
-            detectContentSubgraph:
-              component: Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphMiddleware
+      middlewares:
+        detectContentSubgraph:
+          middleware: Flowpack\Neos\DimensionResolver\Http\DetectContentSubgraphMiddleware
 ```
 
 Link processing is done by the `Flowpack\Neos\DimensionResolver\Http\ContentSubgraphUriProcessorInterface`. To introduce your custom behaviour,
