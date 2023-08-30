@@ -1,4 +1,4 @@
+*.DS_Store
+.idea/
 Documentation/*
 !Documentation/*.rst
-
-.idea/

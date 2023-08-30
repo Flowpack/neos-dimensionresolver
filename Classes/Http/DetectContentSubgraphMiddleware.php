@@ -72,7 +72,6 @@ final class DetectContentSubgraphMiddleware implements MiddlewareInterface
         $uriPathSegmentUsed = false;
         $dimensionValues = $this->detectDimensionSpacePoint($request, $uriPathSegmentUsed);
         $workspaceName = $this->detectContentStream($request);
-
         $existingParameters = $request->getAttribute(ServerRequestAttributes::ROUTING_PARAMETERS);
         if ($existingParameters === null) {
             $existingParameters = RouteParameters::createEmpty();
@@ -81,7 +80,9 @@ final class DetectContentSubgraphMiddleware implements MiddlewareInterface
         $parameters = $existingParameters
             ->withParameter('dimensionValues', json_encode($dimensionValues))
             ->withParameter('workspaceName', $workspaceName)
-            ->withParameter('uriPathSegmentUsed', $uriPathSegmentUsed);
+            ->withParameter('uriPathSegmentUsed', $uriPathSegmentUsed)
+            ->withParameter('requestUriHost', $request->getUri()->getHost());
+
 
         $request = $request->withAttribute(ServerRequestAttributes::ROUTING_PARAMETERS, $parameters);
         return $next->handle($request);
@@ -127,7 +128,7 @@ final class DetectContentSubgraphMiddleware implements MiddlewareInterface
 
             $resolutionMode = $presetConfiguration['resolution']['mode'] ?? ContentDimensionResolutionMode::RESOLUTION_MODE_URIPATHSEGMENT;
             if ($resolutionMode === ContentDimensionResolutionMode::RESOLUTION_MODE_URIPATHSEGMENT) {
-                $options['delimiter'] = $this->uriPathSegmentDelimiter;
+                if (!empty($this->uriPathSegmentDelimiter)) $options['delimiter'] = $this->uriPathSegmentDelimiter;
             }
             $preset = $detector->detectPreset($dimensionName, $presetConfiguration['presets'], $request, $options);
             if ($preset && $resolutionMode === ContentDimensionResolutionMode::RESOLUTION_MODE_URIPATHSEGMENT) {

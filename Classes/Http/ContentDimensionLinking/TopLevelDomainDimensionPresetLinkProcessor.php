@@ -38,6 +38,9 @@ final class TopLevelDomainDimensionPresetLinkProcessor implements ContentDimensi
             $hostSuffixesToBeReplaced[] = '.' . $availablePreset['resolutionValue'];
         }
 
-        return $uriConstraints->withHostSuffix('.' . $preset['resolutionValue'], $hostSuffixesToBeReplaced);
+        if (array_key_exists('resolutionHost', $preset))
+            return $uriConstraints->withHost($preset['resolutionHost']);
+        else
+            return $uriConstraints->withHostSuffix('.' . $preset['resolutionValue'], $hostSuffixesToBeReplaced);
     }
 }

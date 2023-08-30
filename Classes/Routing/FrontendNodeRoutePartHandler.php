@@ -151,6 +151,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
 
         $tagArray = [$contentContext->getWorkspace()->getName(), $node->getIdentifier()];
         $parent = $node->getParent();
+
         while ($parent) {
             $tagArray[] = $parent->getIdentifier();
             $parent = $parent->getParent();
@@ -197,8 +198,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         if ($requestPathWithoutContext === '') {
             $node = $siteNode;
         } else {
-            $relativeNodePath = $this->getRelativeNodePathByUriPathSegmentProperties($siteNode, $requestPathWithoutContext);
-            $node = ($relativeNodePath !== false) ? $siteNode->getNode($relativeNodePath) : null;
+            $node = $this->getNodeFromRequestPath($siteNode, $requestPathWithoutContext) ?? null;
         }
 
         if (!$node instanceof NodeInterface) {
@@ -409,8 +409,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         $nodeContextPathSuffix = ($workspaceName !== 'live') ? substr($nodeContextPath, strpos($nodeContextPath, '@')) : '';
 
         $requestPath = $this->getRequestPathByNode($node);
-
-        return trim($requestPath, '/') . $nodeContextPathSuffix;
+        return $requestPath . $nodeContextPathSuffix;
     }
 
     /**
@@ -422,6 +421,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param NodeInterface $siteNode The site node, used as a starting point while traversing the tree
      * @param string $relativeRequestPath The request path, relative to the site's root path
+     * @deprecated Use getNodeFromRequestPath() - return only the node
      * @return string
      * @throws \Neos\ContentRepository\Exception\NodeException
      */
@@ -446,6 +446,37 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         }
 
         return implode('/', $relativeNodePathSegments);
+    }
+
+    /**
+     * Return Node from RequestPath
+     *
+     * @param NodeInterface $siteNode The site node, used as a starting point while traversing the tree
+     * @param string $relativeRequestPath The request path, relative to the site's root path
+     * @return NodeInterface
+     * @throws \Neos\ContentRepository\Exception\NodeException
+     */
+    protected function getNodeFromRequestPath(NodeInterface $siteNode, $relativeRequestPath)
+    {
+        $matchedNode = false;
+        $node = $siteNode;
+
+        foreach (explode('/', $relativeRequestPath) as $pathSegment) {
+            $foundNodeInThisSegment = false;
+            foreach ($node->getChildNodes('Neos.Neos:Document') as $node) {
+                /** @var NodeInterface $node */
+                if ($node->getProperty('uriPathSegment') === $pathSegment) {
+                    $matchedNode = $node;
+                    $foundNodeInThisSegment = true;
+                    break;
+                }
+            }
+            if (!$foundNodeInThisSegment) {
+                return false;
+            }
+        }
+
+        return $matchedNode;
     }
 
     /**
@@ -482,6 +513,6 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
             $currentNode = $currentNode->getParent();
         }
 
-        return implode('/', array_reverse($requestPathSegments));
+        return '/' . implode('/', array_reverse($requestPathSegments));
     }
 }

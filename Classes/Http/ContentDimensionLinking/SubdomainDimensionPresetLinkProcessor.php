@@ -34,6 +34,10 @@ final class SubdomainDimensionPresetLinkProcessor implements ContentDimensionPre
                 $prefixesToBeReplaced[] = $availablePreset['resolutionValue'] . '.';
             }
         }
-        return $uriConstraints->withHostPrefix($preset['resolutionValue'] ? $preset['resolutionValue'] . '.' : '', $prefixesToBeReplaced);
+
+        if (array_key_exists('resolutionHost', $preset))
+            return $uriConstraints->withHost($preset['resolutionValue'].'.'.$preset['resolutionHost']);
+        else
+            return $uriConstraints->withHostPrefix($preset['resolutionValue'] ? $preset['resolutionValue'] . '.' : '', $prefixesToBeReplaced);
     }
 }
