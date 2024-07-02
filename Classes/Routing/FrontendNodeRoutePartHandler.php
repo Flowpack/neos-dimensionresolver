@@ -181,6 +181,8 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param string $requestPath The request path, for example /the/node/path@some-workspace
      * @return NodeInterface
+     * @throws IllegalObjectTypeException
+     * @throws InvalidRequestPathException
      * @throws NoSiteException
      * @throws NoSiteNodeException
      * @throws NoSuchNodeException
@@ -237,7 +239,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param NodeInterface|string|string[] $node Either a Node object or an absolute context node path (potentially wrapped in an array as ['__contextNodePath' => '<value>'])
      * @return bool|ResolveResult An instance of ResolveResult if the route could resolve the $node, otherwise FALSE. @see DynamicRoutePart::resolveValue()
-     * @throws MissingNodePropertyException | NeosException | IllegalObjectTypeException | NodeException
+     * @throws MissingNodePropertyException | NeosException | IllegalObjectTypeException
      * @see NodeIdentityConverterAspect
      */
     protected function resolveValue($node)
