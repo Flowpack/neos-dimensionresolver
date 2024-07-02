@@ -43,6 +43,7 @@ use Neos\Neos\Routing\Exception\NoHomepageException;
 use Neos\Neos\Routing\Exception\NoSiteException;
 use Neos\Neos\Routing\Exception\NoSuchNodeException;
 use Neos\Neos\Routing\Exception\NoWorkspaceException;
+use Neos\Neos\Routing\Exception\NoSiteNodeException;
 use Neos\Neos\Routing\FrontendNodeRoutePartHandlerInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
