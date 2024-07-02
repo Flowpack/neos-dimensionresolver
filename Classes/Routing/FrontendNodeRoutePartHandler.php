@@ -36,8 +36,13 @@ use Neos\Neos\Domain\Service\NodeShortcutResolver;
 use Neos\Neos\Domain\Service\SiteService;
 use Neos\Neos\Exception as NeosException;
 use Neos\Neos\Routing\Exception;
+use Neos\Neos\Routing\Exception\InvalidRequestPathException;
+use Neos\Neos\Routing\Exception\InvalidShortcutException;
+use Neos\Neos\Routing\Exception\MissingNodePropertyException;
+use Neos\Neos\Routing\Exception\NoHomepageException;
 use Neos\Neos\Routing\Exception\NoSiteException;
 use Neos\Neos\Routing\Exception\NoSuchNodeException;
+use Neos\Neos\Routing\Exception\NoWorkspaceException;
 use Neos\Neos\Routing\FrontendNodeRoutePartHandlerInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
@@ -130,7 +135,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      * @param string $requestPath The request path (without leading "/", relative to the current Site Node)
      * @return bool|MatchResult An instance of MatchResult if the route matches the $requestPath, otherwise FALSE. @see DynamicRoutePart::matchValue()
      * @throws \Exception
-     * @throws Exception\NoHomepageException if no node could be found on the homepage (empty $requestPath)
+     * @throws NoHomepageException if no node could be found on the homepage (empty $requestPath)
      */
     protected function matchValue($requestPath)
     {
@@ -146,7 +151,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         } catch (Exception $exception) {
             $this->systemLogger->debug('FrontendNodeRoutePartHandler matchValue(): ' . $exception->getMessage(), LogEnvironment::fromMethodName(__METHOD__));
             if ($requestPath === '') {
-                throw new Exception\NoHomepageException('Homepage could not be loaded. Probably you haven\'t imported a site yet', 1719778805, $exception);
+                throw new NoHomepageException('Homepage could not be loaded. Probably you haven\'t imported a site yet', 1719778805, $exception);
             }
 
             return false;
@@ -175,10 +180,10 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param string $requestPath The request path, for example /the/node/path@some-workspace
      * @return NodeInterface
-     * @throws Exception\NoSiteException
-     * @throws Exception\NoSiteNodeException
+     * @throws NoSiteException
+     * @throws NoSiteNodeException
      * @throws NoSuchNodeException
-     * @throws Exception\NoWorkspaceException
+     * @throws NoWorkspaceException
      * @throws NodeException
      */
     protected function convertRequestPathToNode($requestPath)
@@ -188,18 +193,18 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
 
         $workspace = $contentContext->getWorkspace();
         if ($workspace === null) {
-            throw new Exception\NoWorkspaceException(sprintf('No workspace found for request path "%s"', $requestPath), 1719778821);
+            throw new NoWorkspaceException(sprintf('No workspace found for request path "%s"', $requestPath), 1719778821);
         }
 
         $site = $contentContext->getCurrentSite();
         if ($site === null) {
-            throw new Exception\NoSiteException(sprintf('No site found for request path "%s"', $requestPath), 1719778836);
+            throw new NoSiteException(sprintf('No site found for request path "%s"', $requestPath), 1719778836);
         }
 
         $siteNode = $contentContext->getCurrentSiteNode();
         if ($siteNode === null) {
             $currentDomain = $contentContext->getCurrentDomain() ? 'Domain with hostname "' . $contentContext->getCurrentDomain()->getHostname() . '" matched.' : 'No specific domain matched.';
-            throw new Exception\NoSiteNodeException(sprintf('No site node found for request path "%s". %s', $requestPath, $currentDomain), 1719778849);
+            throw new NoSiteNodeException(sprintf('No site node found for request path "%s". %s', $requestPath, $currentDomain), 1719778849);
         }
 
         if ($requestPathWithoutContext === '') {
@@ -231,7 +236,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param NodeInterface|string|string[] $node Either a Node object or an absolute context node path (potentially wrapped in an array as ['__contextNodePath' => '<value>'])
      * @return bool|ResolveResult An instance of ResolveResult if the route could resolve the $node, otherwise FALSE. @see DynamicRoutePart::resolveValue()
-     * @throws Exception\MissingNodePropertyException | NeosException | IllegalObjectTypeException | NodeException
+     * @throws MissingNodePropertyException | NeosException | IllegalObjectTypeException | NodeException
      * @see NodeIdentityConverterAspect
      */
     protected function resolveValue($node)
@@ -269,7 +274,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
 
         try {
             $nodeOrUri = $this->resolveShortcutNode($node);
-        } catch (Exception\InvalidShortcutException $exception) {
+        } catch (InvalidShortcutException $exception) {
             $this->systemLogger->debug('FrontendNodeRoutePartHandler resolveValue(): ' . $exception->getMessage(), LogEnvironment::fromMethodName(__METHOD__));
             return false;
         }
@@ -293,7 +298,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param string $uriPath
      * @return false|string|null
-     * @throws Exception\InvalidRequestPathException
+     * @throws InvalidRequestPathException
      */
     protected function truncateUriPathSuffix(string $uriPath): false|string|null
     {
@@ -302,7 +307,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         }
         $suffixLength = strlen($this->options['uriPathSuffix']);
         if (substr($uriPath, -$suffixLength) !== $this->options['uriPathSuffix']) {
-            throw new Exception\InvalidRequestPathException(sprintf('The request path "%s" doesn\'t contain the configured uriPathSuffix "%s"', $uriPath, $this->options['uriPathSuffix']), 1719778525);
+            throw new InvalidRequestPathException(sprintf('The request path "%s" doesn\'t contain the configured uriPathSuffix "%s"', $uriPath, $this->options['uriPathSuffix']), 1719778525);
         }
         return substr($uriPath, 0, -$suffixLength);
     }
@@ -310,7 +315,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
     /**
      * @param NodeInterface $node
      * @return NodeInterface|Uri The original, unaltered $node if it's not a shortcut node. Otherwise the nodes shortcut target (a node or an URI for external & asset shortcuts)
-     * @throws Exception\InvalidShortcutException
+     * @throws InvalidShortcutException
      */
     protected function resolveShortcutNode(NodeInterface $node): Uri|NodeInterface
     {
@@ -319,7 +324,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
             return new Uri($resolvedNode);
         }
         if (!$resolvedNode instanceof NodeInterface) {
-            throw new Exception\InvalidShortcutException(sprintf('Could not resolve shortcut target for node "%s"', $node->getPath()), 1719778533);
+            throw new InvalidShortcutException(sprintf('Could not resolve shortcut target for node "%s"', $node->getPath()), 1719778533);
         }
         return $resolvedNode;
     }
@@ -374,7 +379,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      * @param string $workspaceName Name of the workspace to use in the context
      * @param array $dimensionsAndDimensionValues An array of dimension names (index) and their values (array of strings). See also: ContextFactory
      * @return ContentContext
-     * @throws Exception\NoSiteException
+     * @throws NoSiteException
      */
     protected function buildContextFromWorkspaceNameAndDimensions(string $workspaceName, array $dimensionsAndDimensionValues): ContentContext
     {
@@ -472,7 +477,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param NodeInterface $node The node where the generated path should lead to
      * @return string The relative route path, possibly prefixed with a segment for identifying the current content dimension values
-     * @throws Exception\MissingNodePropertyException
+     * @throws MissingNodePropertyException
      */
     protected function resolveRoutePathForNode(NodeInterface $node)
     {
@@ -525,7 +530,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param NodeInterface $node The node where the generated path should lead to
      * @return string A relative request path
-     * @throws Exception\MissingNodePropertyException if the given node doesn't have a "uriPathSegment" property set
+     * @throws MissingNodePropertyException if the given node doesn't have a "uriPathSegment" property set
      */
     protected function getRequestPathByNode(NodeInterface $node)
     {
@@ -544,7 +549,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         $requestPathSegments = [];
         while ($currentNode instanceof NodeInterface && $currentNode->getParentPath() !== SiteService::SITES_ROOT_PATH) {
             if (!$currentNode->hasProperty('uriPathSegment')) {
-                throw new Exception\MissingNodePropertyException(sprintf('Missing "uriPathSegment" property for node "%s". Nodes can be migrated with the "flow node:repair" command.', $node->getPath()), 1719774283);
+                throw new MissingNodePropertyException(sprintf('Missing "uriPathSegment" property for node "%s". Nodes can be migrated with the "flow node:repair" command.', $node->getPath()), 1719774283);
             }
 
             $pathSegment = $currentNode->getProperty('uriPathSegment');
@@ -559,13 +564,13 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      * Determines the currently active site based on the "requestUriHost" parameter (that has to be set via HTTP middleware)
      *
      * @return Site
-     * @throws Exception\NoSiteException
+     * @throws NoSiteException
      */
     protected function getCurrentSite()
     {
         $requestUriHost = $this->parameters->getValue('requestUriHost');
         if (!is_string($requestUriHost)) {
-            throw new Exception\NoSiteException('Failed to determine current site because the "requestUriHost" Routing parameter is not set', 1719778761);
+            throw new NoSiteException('Failed to determine current site because the "requestUriHost" Routing parameter is not set', 1719778761);
         }
         if (!array_key_exists($requestUriHost, $this->siteByHostRuntimeCache)) {
             $this->siteByHostRuntimeCache[$requestUriHost] = $this->getSiteByHostName($requestUriHost);
@@ -578,7 +583,7 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
      *
      * @param string $hostName
      * @return Site
-     * @throws Exception\NoSiteException
+     * @throws NoSiteException
      */
     protected function getSiteByHostName(string $hostName)
     {
@@ -589,10 +594,10 @@ class FrontendNodeRoutePartHandler extends DynamicRoutePart implements FrontendN
         try {
             $defaultSite = $this->siteRepository->findDefault();
             if ($defaultSite === null) {
-                throw new Exception\NoSiteException('Failed to determine current site because no default site is configured', 1719778771);
+                throw new NoSiteException('Failed to determine current site because no default site is configured', 1719778771);
             }
         } catch (NeosException $exception) {
-            throw new Exception\NoSiteException(sprintf('Failed to determine current site because no domain is specified matching host of "%s" and no default site could be found: %s', $hostName, $exception->getMessage()), 1719778778, $exception);
+            throw new NoSiteException(sprintf('Failed to determine current site because no domain is specified matching host of "%s" and no default site could be found: %s', $hostName, $exception->getMessage()), 1719778778, $exception);
         }
         return $defaultSite;
     }
