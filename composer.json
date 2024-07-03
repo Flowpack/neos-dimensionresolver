@@ -4,8 +4,9 @@
     "license": "GPL-3.0+",
     "description": "A support package for Neos CMS that allows for arbitrary content dimension resolution.",
     "require": {
-        "neos/neos": "^7.0 || ^8.0 || dev-master",
-        "neos/flow": "^7.0 || ^8.0 || dev-master"
+        "ext-mbstring": "*",
+        "neos/neos": "^8.0",
+        "neos/flow": "^8.0"
     },
     "autoload": {
         "psr-4": {
