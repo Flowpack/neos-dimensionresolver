@@ -1,5 +1,7 @@
 # Flowpack Neos Content Dimension Resolver
 
+**Hint: for Neos 9, this behavior is mostly implemented in the Core, and https://github.com/Kleisli/Neos.DomainDimensionResolver implements the remaining domain-based behavior**
+
 ## Introduction
 
 For a general overview over content dimension, please refer to the respective sections in the Neos manual.
